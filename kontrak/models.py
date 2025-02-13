@@ -13,7 +13,7 @@ class Kontrak(TimeStampedModel):
     tanggal = models.DateField()
     nomor = models.CharField(max_length=100)
     nama_pekerjaan = models.CharField(max_length=150)
-    nilai_pekerjaan = models.CharField(max_length=150)
+    nilai_pekerjaan = models.BigIntegerField()
     nama_pelanggan = models.CharField(max_length=150)
     status = models.CharField(
         max_length=20,
@@ -22,7 +22,7 @@ class Kontrak(TimeStampedModel):
     )
 
     def __str__(self):
-        return self.status
+        return self.nomor
     
 class KontrakLampiran(TimeStampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -34,7 +34,7 @@ class KontrakLampiran(TimeStampedModel):
     lampiran = models.FileField(upload_to='kontrak/lampiran/', null=True, blank=True)
     
     def __str__(self):
-        return self.name
+        return self.nomor
     
     class Meta:
         db_table = "kontrak_lampiran"

@@ -1,31 +1,40 @@
 from urllib.parse import urljoin
+from core.serializers import BaseExcludeSerializer
 from rest_framework import serializers
-from .models import Kontrak, KontrakLampiran
 from django.conf import settings
+from .models import Kontrak, KontrakLampiran
 
 
-class KontrakSerializer(serializers.ModelSerializer):
-    class Meta:
+class KontrakSerializer(BaseExcludeSerializer):
+    class Meta(BaseExcludeSerializer.Meta):
         model = Kontrak
-        fields = '__all__'
-        
-class KontrakLampiranSerializer(serializers.ModelSerializer):
+
+
+class KontrakDetailSerializer(KontrakSerializer):
     lampiran = serializers.SerializerMethodField()
-    
+
+    class Meta(KontrakSerializer.Meta):
+        pass
+
+    def get_lampiran(self, obj):
+        lampiran = obj.lampiran.all()
+        return KontrakLampiranReadSerializer(lampiran, many=True, context=self.context).data
+
+
+class KontrakLampiranSerializer(BaseExcludeSerializer):
+    class Meta(BaseExcludeSerializer.Meta):
+        model = KontrakLampiran
+
+
+class KontrakLampiranReadSerializer(serializers.ModelSerializer):
+    lampiran = serializers.SerializerMethodField()
+
     class Meta:
         model = KontrakLampiran
-        fields = '__all__'
-        
+        fields = ['id', 'lampiran', 'tanggal', 'nomor', 'perihal', 'keterangan', 'created_at']
+
     def get_lampiran(self, obj):
         if obj.lampiran:
-            # Construct the absolute URL manually
             base_url = getattr(settings, 'BASE_URL', 'http://localhost:8080')
             return urljoin(base_url, obj.lampiran.url)
         return None
-
-class KontrakDetailSerializer(serializers.ModelSerializer):
-    lampiran = KontrakLampiranSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Kontrak
-        fields = '__all__'

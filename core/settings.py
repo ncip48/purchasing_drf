@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'users.apps.UserConfig',
     #modules
     'kontrak.apps.KontrakConfig',
+    'purchase_request.apps.PurchaseRequestConfig',
 ]
 
 MIDDLEWARE = [
