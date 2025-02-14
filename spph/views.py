@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from django.shortcuts import get_object_or_404
-from .models import SPPH, SPPHLampiran
+from .models import SPPH, SPPHLampiran, SPPHVendor
 from .serializers import SPPHDetailSerializer, SPPHItemsSerializer, SPPHLampiranSerializer, SPPHSerializer, SPPHPostSerializer
 from core.paginations import PageNumberPagination
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -48,10 +48,19 @@ class SPPHViewSet(viewsets.ModelViewSet):
         if not request.user.has_perm('spph.add_spph'):
             return Response(status=status.HTTP_403_FORBIDDEN)
         
+        # Extract vendors from request data
+        vendors = request.data.pop('vendors', [])
+        
+        # Create the SPPH instance
         serializer = SPPHPostSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        spph = serializer.save()
         
+        # Create related SPPHVendor entries
+        for vendor_id in vendors:
+            SPPHVendor.objects.create(spph=spph, vendor_id=vendor_id)
+        
+        # Return the created SPPH data
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def update(self, request, *args, **kwargs):

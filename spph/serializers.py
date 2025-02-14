@@ -2,7 +2,7 @@ from urllib.parse import urljoin
 from core.serializers import BaseExcludeSerializer
 from purchase_request.models import PurchaseRequestDetail
 from purchase_request.serializers import PurchaseRequestDetailSerializer, PurchaseRequestSerializer
-from spph.models import SPPH, SPPHDetail, SPPHLampiran
+from spph.models import SPPH, SPPHDetail, SPPHLampiran, SPPHVendor
 from rest_framework import serializers
 from vendor.serializers import VendorSerializer
 from django.conf import settings
@@ -72,3 +72,8 @@ class SPPHDetailPostSerializer(BaseExcludeSerializer):
     class Meta:
         model = SPPHDetail
         fields = '__all__'
+        
+class SPPHVendorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SPPHVendor
+        fields = ['id', 'spph', 'vendor']
