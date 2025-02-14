@@ -9,6 +9,8 @@ from django.shortcuts import get_object_or_404
 from .models import PurchaseRequest, PurchaseRequestDetail
 from .serializers import PurchaseRequestDetailPostSerializer, PurchaseRequestItemsSerializer, PurchaseRequestPostSerializer, PurchaseRequestSerializer, PurchaseRequestDetailSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.views import APIView
+
 
 class PurchaseRequestViewSet(viewsets.ModelViewSet):
     queryset = PurchaseRequest.objects.all()
@@ -143,3 +145,17 @@ class PurchaseRequestDetailViewSet(viewsets.ModelViewSet):
         
         self.perform_destroy(purchase_request_detail)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class PurchaseRequestItemsView(APIView):
+    def get(self, request, purchase_request_id):
+        # Get the PurchaseRequest object or return 404
+        purchase_request = get_object_or_404(PurchaseRequest, id=purchase_request_id)
+        
+        # Get related PurchaseRequestDetail items
+        items = PurchaseRequestDetail.objects.filter(purchase_request=purchase_request)
+        
+        # Serialize the items
+        serializer = PurchaseRequestDetailSerializer(items, many=True)
+        
+        # Return the serialized data
+        return Response(serializer.data, status=status.HTTP_200_OK)

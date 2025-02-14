@@ -40,6 +40,7 @@ router.register(r'spph-lampirans', SPPHLampiranViewSet, basename="spph-lampiran"
 urlpatterns = [
     path('api/v1/', include(router.urls)),
     path('api/v1/', include("users.urls")),
+    path('api/v1/', include("purchase_request.urls")),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path("api-auth/", include("rest_framework.urls")),  
