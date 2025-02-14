@@ -41,7 +41,6 @@ class KontrakLampiran(TimeStampedModel):
         default_permissions = ()  # Disable default permissions to avoid duplicates
         permissions = [
             ('add_kontrak_lampiran', 'Can add kontrak lampiran'),
-            ('change_kontrak_lampiran', 'Can change kontrak lampiran'),
             ('delete_kontrak_lampiran', 'Can delete kontrak lampiran'),
             ('view_kontrak_lampiran', 'Can view kontrak lampiran'),
         ]

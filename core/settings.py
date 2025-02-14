@@ -40,12 +40,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'drf_redesign',
+    # 'drf_redesign',
     'rest_framework',
     'users.apps.UserConfig',
     #modules
     'kontrak.apps.KontrakConfig',
     'purchase_request.apps.PurchaseRequestConfig',
+    'vendor.apps.VendorConfig',
+    'spph.apps.SpphConfig',
 ]
 
 MIDDLEWARE = [

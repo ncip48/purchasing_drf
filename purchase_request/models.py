@@ -10,7 +10,6 @@ class PurchaseRequest(TimeStampedModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     kontrak = models.ForeignKey(Kontrak, on_delete=models.CASCADE)
     nomor = models.CharField(max_length=100)
-    dasar = models.CharField(max_length=100)
     tanggal = models.DateField()
     
     def __str__(self):
@@ -28,7 +27,7 @@ class PurchaseRequest(TimeStampedModel):
     
 class PurchaseRequestDetail(TimeStampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    purchase_request = models.ForeignKey(PurchaseRequest, on_delete=models.CASCADE)
+    purchase_request = models.ForeignKey(PurchaseRequest, on_delete=models.CASCADE, related_name="items")
     kode_material = models.CharField(max_length=100)
     nama_barang = models.CharField(max_length=200)
     spesifikasi = models.CharField(max_length=200)
@@ -46,7 +45,6 @@ class PurchaseRequestDetail(TimeStampedModel):
         default_permissions = ()  # Disable default permissions to avoid duplicates
         permissions = [
             ('add_purchase_request_detail', 'Can add purchase request detail'),
-            ('change_purchase_request_detail', 'Can change purchase request detail'),
             ('delete_purchase_request_detail', 'Can delete purchase request detail'),
             ('view_purchase_request_detail', 'Can view purchase request detail'),
         ]
