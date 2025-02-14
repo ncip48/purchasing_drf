@@ -15,6 +15,10 @@ class PurchaseRequestPostSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ['user']
 
+    def create(self, validated_data):
+        # You can customize the creation logic if needed
+        return super().create(validated_data)
+
 class PurchaseRequestSerializer(BaseExcludeSerializer):
     user = UserProfileSerializer(read_only=True)
     kontrak = KontrakSerializer(read_only=True)
@@ -29,13 +33,16 @@ class PurchaseRequestItemsSerializer(PurchaseRequestSerializer):
         pass
 
     def get_items(self, obj):
-        detail = obj.items.all()
-        return PurchaseRequestDetailSerializer(detail, many=True, context=self.context).data
-    
+        return PurchaseRequestDetailSerializer(obj.items.all(), many=True, context=self.context).data
+
 class PurchaseRequestDetailSerializer(BaseExcludeSerializer):
+    class Meta(BaseExcludeSerializer.Meta):
+        model = PurchaseRequestDetail
+        exclude = ['purchase_request', 'deleted_at', 'transaction_id', 'restored_at']
+
+class PurchaseRequestDetailPostSerializer(serializers.ModelSerializer):
     purchase_request = serializers.PrimaryKeyRelatedField(queryset=PurchaseRequest.objects.all())
 
     class Meta:
         model = PurchaseRequestDetail
         fields = '__all__'
-        

@@ -25,16 +25,17 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 from rest_framework.routers import DefaultRouter
-from spph.views import SPPHViewSet
+from spph.views import SPPHLampiranViewSet, SPPHViewSet
 from vendor.views import VendorViewSet
 
 router = DefaultRouter()
 router.register(r'kontrak', KontrakViewSet, basename='kontrak')
-router.register(r'kontrak-lampiran', KontrakLampiranViewSet, basename='kontrak_lampiran')
+router.register(r'kontrak-lampiran', KontrakLampiranViewSet, basename='kontrak-lampiran')
 router.register(r'vendor', VendorViewSet, basename='vendor')
-router.register(r'purchase-requests', PurchaseRequestViewSet, basename="purchase_request")
+router.register(r'purchase-requests', PurchaseRequestViewSet, basename="purchase-request")
 router.register(r'purchase-request-details', PurchaseRequestDetailViewSet, basename="purchae-request-detail")
 router.register(r'spphs', SPPHViewSet, basename="spph")
+router.register(r'spph-lampirans', SPPHLampiranViewSet, basename="spph-lampiran")
 
 urlpatterns = [
     path('api/v1/', include(router.urls)),

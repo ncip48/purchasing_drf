@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from django.shortcuts import get_object_or_404
 from .models import PurchaseRequest, PurchaseRequestDetail
-from .serializers import PurchaseRequestItemsSerializer, PurchaseRequestPostSerializer, PurchaseRequestSerializer, PurchaseRequestDetailSerializer
+from .serializers import PurchaseRequestDetailPostSerializer, PurchaseRequestItemsSerializer, PurchaseRequestPostSerializer, PurchaseRequestSerializer, PurchaseRequestDetailSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 class PurchaseRequestViewSet(viewsets.ModelViewSet):
@@ -24,7 +24,7 @@ class PurchaseRequestViewSet(viewsets.ModelViewSet):
         return super().get_permissions()
 
     def list(self, request, *args, **kwargs):
-        if not request.user.has_perm('kontrak.view_purchase_request'):
+        if not request.user.has_perm('purchaserequest.view_purchase_request'):
             return Response(status=status.HTTP_403_FORBIDDEN)
         
         purchase_request_queryset = self.queryset
@@ -37,7 +37,7 @@ class PurchaseRequestViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         purchase_request = get_object_or_404(self.queryset, pk=kwargs['pk'])
-        if not request.user.has_perm('kontrak.view_purchase_request'):
+        if not request.user.has_perm('purchaserequest.view_purchase_request'):
             return Response(status=status.HTTP_403_FORBIDDEN)
         
         serializer = PurchaseRequestItemsSerializer(purchase_request)
@@ -45,7 +45,7 @@ class PurchaseRequestViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         # Check permission for creating a purchase request
-        if not request.user.has_perm('kontrak.add_purchase_request'):
+        if not request.user.has_perm('purchaserequest.add_purchase_request'):
             return Response(status=status.HTTP_403_FORBIDDEN)
         
         serializer = PurchaseRequestPostSerializer(data=request.data)
@@ -58,7 +58,7 @@ class PurchaseRequestViewSet(viewsets.ModelViewSet):
         purchase_request = get_object_or_404(self.queryset, pk=kwargs['pk'])
         
         # Check permission for updating a purchase request
-        if not request.user.has_perm('kontrak.change_purchase_request'):
+        if not request.user.has_perm('purchaserequest.change_purchase_request'):
             return Response(status=status.HTTP_403_FORBIDDEN)
         
         serializer = PurchaseRequestPostSerializer(purchase_request, data=request.data)
@@ -71,7 +71,7 @@ class PurchaseRequestViewSet(viewsets.ModelViewSet):
         purchase_request = get_object_or_404(self.queryset, pk=kwargs['pk'])
         
         # Check permission for deleting a purchase request
-        if not request.user.has_perm('kontrak.delete_purchase_request'):
+        if not request.user.has_perm('purchaserequest.delete_purchase_request'):
             return Response(status=status.HTTP_403_FORBIDDEN)
         
         self.perform_destroy(purchase_request)
@@ -91,7 +91,7 @@ class PurchaseRequestDetailViewSet(viewsets.ModelViewSet):
         return super().get_permissions()
 
     def list(self, request, *args, **kwargs):
-        if not request.user.has_perm('kontrak.view_purchase_request_detail'):
+        if not request.user.has_perm('purchaserequest.view_purchase_request_detail'):
             return Response(status=status.HTTP_403_FORBIDDEN)
         
         purchase_request_detail_queryset = self.queryset
@@ -104,7 +104,7 @@ class PurchaseRequestDetailViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         purchase_request_detail = get_object_or_404(self.queryset, pk=kwargs['pk'])
-        if not request.user.has_perm('kontrak.view_purchase_request_detail'):
+        if not request.user.has_perm('purchaserequest.view_purchase_request_detail'):
             return Response(status=status.HTTP_403_FORBIDDEN)
         
         serializer = self.get_serializer(purchase_request_detail)
@@ -112,10 +112,10 @@ class PurchaseRequestDetailViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         # Check permission for creating a purchase request detail
-        if not request.user.has_perm('kontrak.add_purchase_request_detail'):
+        if not request.user.has_perm('purchaserequest.add_purchase_request_detail'):
             return Response(status=status.HTTP_403_FORBIDDEN)
         
-        serializer = self.get_serializer(data=request.data)
+        serializer = PurchaseRequestDetailPostSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         
@@ -125,10 +125,10 @@ class PurchaseRequestDetailViewSet(viewsets.ModelViewSet):
         purchase_request_detail = get_object_or_404(self.queryset, pk=kwargs['pk'])
         
         # Check permission for updating a purchase request detail
-        if not request.user.has_perm('kontrak.change_purchase_request_detail'):
+        if not request.user.has_perm('purchaserequest.change_purchase_request_detail'):
             return Response(status=status.HTTP_403_FORBIDDEN)
         
-        serializer = self.get_serializer(purchase_request_detail, data=request.data)
+        serializer = PurchaseRequestDetailPostSerializer(purchase_request_detail, data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         
@@ -138,7 +138,7 @@ class PurchaseRequestDetailViewSet(viewsets.ModelViewSet):
         purchase_request_detail = get_object_or_404(self.queryset, pk=kwargs['pk'])
         
         # Check permission for deleting a purchase request detail
-        if not request.user.has_perm('kontrak.delete_purchase_request_detail'):
+        if not request.user.has_perm('purchaserequest.delete_purchase_request_detail'):
             return Response(status=status.HTTP_403_FORBIDDEN)
         
         self.perform_destroy(purchase_request_detail)

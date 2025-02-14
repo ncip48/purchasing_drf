@@ -4,10 +4,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from django.shortcuts import get_object_or_404
-from .models import SPPH
-from .serializers import SPPHSerializer, SPPHPostSerializer
+from .models import SPPH, SPPHLampiran
+from .serializers import SPPHDetailSerializer, SPPHItemsSerializer, SPPHLampiranSerializer, SPPHSerializer, SPPHPostSerializer
 from core.paginations import PageNumberPagination
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.parsers import MultiPartParser, FormParser
 
 class SPPHViewSet(viewsets.ModelViewSet):
     queryset = SPPH.objects.all()
@@ -23,7 +24,7 @@ class SPPHViewSet(viewsets.ModelViewSet):
         return super().get_permissions()
 
     def list(self, request, *args, **kwargs):
-        if not request.user.has_perm('kontrak.view_spph'):
+        if not request.user.has_perm('spph.view_spph'):
             return Response(status=status.HTTP_403_FORBIDDEN)
         
         spph_queryset = self.queryset
@@ -36,15 +37,15 @@ class SPPHViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         spph = get_object_or_404(self.queryset, pk=kwargs['pk'])
-        if not request.user.has_perm('kontrak.view_spph'):
+        if not request.user.has_perm('spph.view_spph'):
             return Response(status=status.HTTP_403_FORBIDDEN)
         
-        serializer = SPPHSerializer(spph)
+        serializer = SPPHItemsSerializer(spph)
         return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         # Check permission for creating an SPPH
-        if not request.user.has_perm('kontrak.add_spph'):
+        if not request.user.has_perm('spph.add_spph'):
             return Response(status=status.HTTP_403_FORBIDDEN)
         
         serializer = SPPHPostSerializer(data=request.data)
@@ -57,7 +58,7 @@ class SPPHViewSet(viewsets.ModelViewSet):
         spph = get_object_or_404(self.queryset, pk=kwargs['pk'])
         
         # Check permission for updating an SPPH
-        if not request.user.has_perm('kontrak.change_spph'):
+        if not request.user.has_perm('spph.change_spph'):
             return Response(status=status.HTTP_403_FORBIDDEN)
         
         serializer = SPPHPostSerializer(spph, data=request.data)
@@ -70,8 +71,72 @@ class SPPHViewSet(viewsets.ModelViewSet):
         spph = get_object_or_404(self.queryset, pk=kwargs['pk'])
         
         # Check permission for deleting an SPPH
-        if not request.user.has_perm('kontrak.delete_spph'):
+        if not request.user.has_perm('spph.delete_spph'):
             return Response(status=status.HTTP_403_FORBIDDEN)
         
         self.perform_destroy(spph)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class SPPHLampiranViewSet(viewsets.ModelViewSet):
+    queryset = SPPHLampiran.objects.all()
+    serializer_class = SPPHLampiranSerializer
+    authentication_classes = [JWTAuthentication, BasicAuthentication, SessionAuthentication]
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    parser_classes = [MultiPartParser, FormParser]  # For file upload
+    pagination_class = PageNumberPagination
+
+    def get_permissions(self):
+        # Custom permissions for each action
+        if self.action == 'create':
+            self.permission_classes = [IsAuthenticated,]
+            required_permission = 'add_spph_lampiran'
+        elif self.action in ['update', 'partial_update']:
+            self.permission_classes = [IsAuthenticated,]
+            required_permission = 'change_spph_lampiran'
+        elif self.action == 'destroy':
+            self.permission_classes = [IsAuthenticated,]
+            required_permission = 'delete_spph_lampiran'
+        elif self.action == 'list' or self.action == 'retrieve':
+            required_permission = 'view_spph_lampiran'
+        else:
+            required_permission = None
+        
+        # Check custom permission
+        if required_permission and not self.request.user.has_perm(f'spph.{required_permission}'):
+            self.permission_denied(self.request, message=f'Permission {required_permission} required.')
+        
+        return super().get_permissions()
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.queryset
+        paginator = self.pagination_class()
+        paginated_lampiran = paginator.paginate_queryset(queryset, request)
+        
+        serializer = self.get_serializer(paginated_lampiran, many=True)
+        return paginator.get_paginated_response(serializer.data)
+    
+    def retrieve(self, request, *args, **kwargs):
+        instance = get_object_or_404(self.queryset, pk=kwargs['pk'])
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def update(self, request, *args, **kwargs):
+        instance = get_object_or_404(self.queryset, pk=kwargs['pk'])
+        
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        
+        return Response(serializer.data)
+    
+    def destroy(self, request, *args, **kwargs):
+        instance = get_object_or_404(self.queryset, pk=kwargs['pk'])
+        self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)

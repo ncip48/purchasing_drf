@@ -4,7 +4,7 @@ import uuid
 from django.db import models
 
 from core.models import TimeStampedModel
-from purchase_request.models import PurchaseRequest
+from purchase_request.models import PurchaseRequest, PurchaseRequestDetail
 from vendor.models import Vendor
 
 class SPPH(TimeStampedModel):
@@ -54,4 +54,22 @@ class SPPHVendor(TimeStampedModel):
             ('add_spph_vendor', 'Can add SPPH vendor'),
             ('delete_spph_vendor', 'Can delete SPPH vendor'),
             ('view_spph_vendor', 'Can view SPPH vendor'),
+        ]
+
+class SPPHDetail(TimeStampedModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    spph = models.ForeignKey(SPPH, on_delete=models.CASCADE, related_name="items")
+    purchase_request_detail = models.ForeignKey(PurchaseRequestDetail, on_delete=models.CASCADE)
+    qty = models.IntegerField()
+    
+    def __str__(self):
+        return self.spph.nomor_spph
+    
+    class Meta:
+        db_table = "spph_detail"
+        default_permissions = ()  # Disable default permissions to avoid duplicates
+        permissions = [
+            ('add_spph_detail', 'Can add SPPH detail'),
+            ('delete_spph_detail', 'Can delete SPPH detail'),
+            ('view_spph_detail', 'Can view SPPH detail'),
         ]
