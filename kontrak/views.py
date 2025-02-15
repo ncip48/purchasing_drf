@@ -85,22 +85,18 @@ class KontrakLampiranViewSet(viewsets.ModelViewSet):
     pagination_class = PageNumberPagination
 
     def get_permissions(self):
-        # Custom permissions for each action
-        if self.action == 'create':
-            self.permission_classes = [IsAuthenticated,]
-            required_permission = 'add_kontrak_lampiran'
-        elif self.action in ['update', 'partial_update']:
-            self.permission_classes = [IsAuthenticated,]
-            required_permission = 'change_kontrak_lampiran'
-        elif self.action == 'destroy':
-            self.permission_classes = [IsAuthenticated,]
-            required_permission = 'delete_kontrak_lampiran'
-        elif self.action == 'list' or self.action == 'retrieve':
-            required_permission = 'view_kontrak_lampiran'
-        else:
-            required_permission = None
+        # Map actions to required permissions
+        permission_map = {
+            'create': 'add_kontrak_lampiran',
+            'update': 'change_kontrak_lampiran',
+            'partial_update': 'change_kontrak_lampiran',
+            'destroy': 'delete_kontrak_lampiran',
+            'list': 'view_kontrak_lampiran',
+            'retrieve': 'view_kontrak_lampiran',
+        }
         
-        # Check custom permission
+        # Check required permission
+        required_permission = permission_map.get(self.action)
         if required_permission and not self.request.user.has_perm(f'kontrak.{required_permission}'):
             self.permission_denied(self.request, message=f'Permission {required_permission} required.')
         
@@ -125,15 +121,6 @@ class KontrakLampiranViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer)
         
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    def update(self, request, *args, **kwargs):
-        instance = get_object_or_404(self.queryset, pk=kwargs['pk'])
-        
-        serializer = self.get_serializer(instance, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        
-        return Response(serializer.data)
     
     def destroy(self, request, *args, **kwargs):
         instance = get_object_or_404(self.queryset, pk=kwargs['pk'])
