@@ -45,6 +45,7 @@ class PurchaseRequestDetail(TimeStampedModel):
         default_permissions = ()  # Disable default permissions to avoid duplicates
         permissions = [
             ('add_purchase_request_detail', 'Can add purchase request detail'),
+            ('change_purchase_request_detail', 'Can change purchase request detail'),
             ('delete_purchase_request_detail', 'Can delete purchase request detail'),
             ('view_purchase_request_detail', 'Can view purchase request detail'),
         ]

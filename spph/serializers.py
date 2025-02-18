@@ -30,7 +30,7 @@ class SPPHLampiranSerializer(BaseExcludeSerializer):
 class SPPHSerializer(BaseExcludeSerializer):
     purchase_request = PurchaseRequestSerializer(read_only=True)
     vendors = VendorSerializer(many=True, read_only=True)
-    lampiran = SPPHLampiranSerializer(many=True, read_only=True, source='lampiran.all')
+    lampirans = SPPHLampiranSerializer(many=True, read_only=True, source='lampirans.all')
 
     class Meta(BaseExcludeSerializer.Meta):
         model = SPPH

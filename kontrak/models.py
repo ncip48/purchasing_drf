@@ -26,7 +26,7 @@ class Kontrak(TimeStampedModel):
     
 class KontrakLampiran(TimeStampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    kontrak = models.ForeignKey(Kontrak, on_delete=models.CASCADE, related_name='lampiran')
+    kontrak = models.ForeignKey(Kontrak, on_delete=models.CASCADE, related_name='lampirans')
     tanggal = models.DateField()
     nomor = models.CharField(max_length=100)
     perihal = models.CharField(max_length=100, null=True)

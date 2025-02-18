@@ -29,9 +29,9 @@ from spph.views import SPPHLampiranViewSet, SPPHViewSet
 from vendor.views import VendorViewSet
 
 router = DefaultRouter()
-router.register(r'kontrak', KontrakViewSet, basename='kontrak')
-router.register(r'kontrak-lampiran', KontrakLampiranViewSet, basename='kontrak-lampiran')
-router.register(r'vendor', VendorViewSet, basename='vendor')
+router.register(r'kontraks', KontrakViewSet, basename='kontrak')
+router.register(r'kontrak-lampirans', KontrakLampiranViewSet, basename='kontrak-lampiran')
+router.register(r'vendors', VendorViewSet, basename='vendor')
 router.register(r'purchase-requests', PurchaseRequestViewSet, basename="purchase-request")
 router.register(r'purchase-request-details', PurchaseRequestDetailViewSet, basename="purchae-request-detail")
 router.register(r'spphs', SPPHViewSet, basename="spph")

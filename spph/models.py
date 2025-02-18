@@ -24,7 +24,7 @@ class SPPH(TimeStampedModel):
     
 class SPPHLampiran(TimeStampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    spph = models.ForeignKey(SPPH, on_delete=models.CASCADE, related_name="lampiran")
+    spph = models.ForeignKey(SPPH, on_delete=models.CASCADE, related_name="lampirans")
     file = models.FileField(upload_to='spph/lampiran/',null=True)
     
     def __str__(self):

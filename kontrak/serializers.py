@@ -11,14 +11,14 @@ class KontrakSerializer(BaseExcludeSerializer):
 
 
 class KontrakDetailSerializer(KontrakSerializer):
-    lampiran = serializers.SerializerMethodField()
+    lampirans = serializers.SerializerMethodField()
 
     class Meta(KontrakSerializer.Meta):
         pass
 
-    def get_lampiran(self, obj):
-        lampiran = obj.lampiran.all()
-        return KontrakLampiranReadSerializer(lampiran, many=True, context=self.context).data
+    def get_lampirans(self, obj):
+        lampirans = obj.lampirans.all()
+        return KontrakLampiranReadSerializer(lampirans, many=True, context=self.context).data
 
 
 class KontrakLampiranSerializer(BaseExcludeSerializer):
